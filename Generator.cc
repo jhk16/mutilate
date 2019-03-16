@@ -76,3 +76,41 @@ Generator* createGenerator(std::string str) {
 
   return NULL;
 }
+
+Generator *createPopularityGenerator(std::string str, long records) {
+  Generator *ret = NULL;
+
+  char *s_copy = new char[str.length() + 1];
+  strcpy(s_copy, str.c_str());
+  char *saveptr = NULL;
+
+  if (atoi(s_copy) != 0 || !strcmp(s_copy, "0")) {
+    double v = atof(s_copy);
+    delete[] s_copy;
+    return new Fixed(v);
+  }
+
+  char *t_ptr = strtok_r(s_copy, ":", &saveptr);
+  char *a_ptr = strtok_r(NULL, ":", &saveptr);
+
+  if (t_ptr == NULL) // || a_ptr == NULL)
+    DIE("strtok(.., \":\") failed to parse %s", str.c_str());
+
+  char t = t_ptr[0];
+
+  saveptr = NULL;
+  char *s1 = strtok_r(a_ptr, ",", &saveptr);
+  char *s2 = strtok_r(NULL, ",", &saveptr);
+  char *s3 = strtok_r(NULL, ",", &saveptr);
+
+  double a1 = s1 ? atof(s1) : 0.0;
+  double a2 = s2 ? atof(s2) : 0.0;
+  double a3 = s3 ? atof(s3) : 0.0;
+
+  if (strcasestr(str.c_str(), "uniform")) ret = new Uniform(records);
+  else DIE("Unable to create Request Generator '%s'", str.c_str());
+
+  delete[] s_copy;
+
+  return ret;
+}

@@ -61,6 +61,12 @@ option "search" - "Search for the QPS where N-order statistic < Xus.  \
 faster than 1000us)." string typestr="N:X"
 option "scan" - "Scan latency across QPS rates from min to max."
        string typestr="min:max:step"
+option "popularity" - "Key popularity distribution." string default="uniform"
+
+text "
+The following popularity distributions are supported:
+   uniform                      Uniform distribution.
+"
 
 text "\nAgent-mode options:"
 option "agentmode" A "Run client in agent mode."

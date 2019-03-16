@@ -211,6 +211,7 @@ private:
 };
 
 Generator* createGenerator(std::string str);
+Generator *createPopularityGenerator(std::string str, long records);
 Generator* createFacebookKey();
 Generator* createFacebookValue();
 Generator* createFacebookIA();

@@ -28,6 +28,7 @@ Connection::Connection(struct event_base* _base, struct evdns_base* _evdns,
   valuesize = createGenerator(options.valuesize);
   keysize = createGenerator(options.keysize);
   keygen = new KeyGenerator(keysize, options.records);
+  popularity = createPopularityGenerator(options.popularity, options.records);
 
   if (options.lambda <= 0) {
     iagen = createGenerator("0");
@@ -121,7 +122,7 @@ void Connection::start_loading() {
 void Connection::issue_something(double now) {
   char key[256];
   // FIXME: generate key distribution here!
-  string keystr = keygen->generate(lrand48() % options.records);
+  string keystr = keygen->generate(popularity->generate());
   strcpy(key, keystr.c_str());
 
   if (drand48() < options.update) {

@@ -1078,6 +1078,7 @@ void args_to_options(options_t* options) {
   //  options->keysize = args.keysize_arg;
   strcpy(options->valuesize, args.valuesize_arg);
   //  options->valuesize = args.valuesize_arg;
+  strcpy(options->popularity, args.popularity_arg);
   options->update = args.update_arg;
   options->time = args.time_arg;
   options->loadonly = args.loadonly_given;

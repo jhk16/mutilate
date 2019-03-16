@@ -20,6 +20,7 @@ typedef struct {
   // int keysize;
   //  int valuesize;
   char ia[32];
+  char popularity[32];
 
   // qps_per_connection
   // iadist

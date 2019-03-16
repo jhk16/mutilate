@@ -97,6 +97,7 @@ private:
   Generator *keysize;
   KeyGenerator *keygen;
   Generator *iagen;
+  Generator *popularity;
   std::queue<Operation> op_queue;
 
   // state machine functions / event processing
