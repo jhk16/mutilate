@@ -1,5 +1,7 @@
 // -*- c++ -*-
 
+#include <mutex>
+
 #include "config.h"
 
 #include "Generator.h"
@@ -77,7 +79,7 @@ Generator* createGenerator(std::string str) {
   return NULL;
 }
 
-Generator *createPopularityGenerator(std::string str, long records) {
+static Generator *_createPopularityGenerator(std::string str, long records) {
   Generator *ret = NULL;
 
   char *s_copy = new char[str.length() + 1];
@@ -114,3 +116,15 @@ Generator *createPopularityGenerator(std::string str, long records) {
 
   return ret;
 }
+
+static std::mutex createPopGenLock;
+static Generator *popularityGenerator;
+
+Generator *createPopularityGenerator(std::string str, long records) {
+  std::lock_guard<std::mutex> lock(createPopGenLock);
+  if (!popularityGenerator) {
+    popularityGenerator = _createPopularityGenerator(str, records);
+  }
+  return popularityGenerator;
+}
+
