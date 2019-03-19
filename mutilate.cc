@@ -1080,6 +1080,7 @@ void args_to_options(options_t* options) {
   //  options->valuesize = args.valuesize_arg;
   strcpy(options->popularity, args.popularity_arg);
   options->update = args.update_arg;
+  options->permutation_seed = lrand48();
   options->time = args.time_arg;
   options->loadonly = args.loadonly_given;
   options->depth = args.depth_arg;

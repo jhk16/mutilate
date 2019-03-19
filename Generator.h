@@ -79,6 +79,64 @@ private:
   double scale;
 };
 
+class Zipf : public Generator {
+public:
+  Zipf(int _n, double _theta, long permutation_seed) : n(_n), theta(_theta) {
+    this->alpha = 1.0 / (1.0 - this->theta);
+    this->zetan = this->zeta(this->n, this->theta);
+    this->eta = (1.0 - pow(2.0 / n, 1.0 - theta)) / (1.0 - this->zeta(2.0, this->theta) / this->zetan);
+    this->permutation = new int[this->n];
+    for (int i=0; i<n; i++)
+      this->permutation[i] = i;
+    if (permutation_seed) {
+      drand48_data drand_buf;
+      srand48_r(permutation_seed, &drand_buf);
+      for (int i=n-1; i>0; i--) {
+        long j;
+        lrand48_r(&drand_buf, &j);
+        j %= i + 1;
+        int tmp = this->permutation[i];
+        this->permutation[i] = this->permutation[j];
+        this->permutation[j] = tmp;
+      }
+    }
+  }
+
+  ~Zipf() {
+    delete[] this->permutation;
+  }
+
+  virtual double generate(double U = -1.0) {
+    int idx;
+
+    if (U < 0.0) U = drand48();
+    double uz = U * this->zetan;
+    if (uz < 1)
+      idx = 0;
+    if (uz < 1.0 + pow(0.5, this->theta))
+      idx = 1;
+    idx = (int)(1.0 * this->n * pow(this->eta*U - this->eta + 1.0, this->alpha));
+
+    assert(idx >= 0 && idx < this->n);
+    return permutation[idx];
+  }
+
+private:
+  int n;
+  double theta;
+  double alpha;
+  double zetan;
+  double eta;
+  int *permutation;
+
+  double zeta(int n, double theta) {
+    double ret = 0;
+    for (int i=1; i<=n; i++)
+      ret += pow(i, -theta);
+    return ret;
+  }
+};
+
 class Normal : public Generator {
 public:
   Normal(double _mean = 1.0, double _sd = 1.0) : mean(_mean), sd(_sd) {
@@ -210,8 +268,9 @@ private:
   double max;
 };
 
+
 Generator* createGenerator(std::string str);
-Generator *createPopularityGenerator(std::string str, long records);
+Generator *createPopularityGenerator(std::string str, long records, long permutation_seed);
 Generator* createFacebookKey();
 Generator* createFacebookValue();
 Generator* createFacebookIA();

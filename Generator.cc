@@ -79,7 +79,7 @@ Generator* createGenerator(std::string str) {
   return NULL;
 }
 
-static Generator *_createPopularityGenerator(std::string str, long records) {
+static Generator *_createPopularityGenerator(std::string str, long records, long permutation_seed) {
   Generator *ret = NULL;
 
   char *s_copy = new char[str.length() + 1];
@@ -109,7 +109,8 @@ static Generator *_createPopularityGenerator(std::string str, long records) {
   double a2 = s2 ? atof(s2) : 0.0;
   double a3 = s3 ? atof(s3) : 0.0;
 
-  if (strcasestr(str.c_str(), "uniform")) ret = new Uniform(records);
+  if      (strcasestr(str.c_str(), "uniform")) ret = new Uniform(records);
+  else if (strcasestr(str.c_str(), "zipf")) ret = new Zipf(records, a1, permutation_seed);
   else DIE("Unable to create Request Generator '%s'", str.c_str());
 
   delete[] s_copy;
@@ -120,10 +121,10 @@ static Generator *_createPopularityGenerator(std::string str, long records) {
 static std::mutex createPopGenLock;
 static Generator *popularityGenerator;
 
-Generator *createPopularityGenerator(std::string str, long records) {
+Generator *createPopularityGenerator(std::string str, long records, long permutation_seed) {
   std::lock_guard<std::mutex> lock(createPopGenLock);
   if (!popularityGenerator) {
-    popularityGenerator = _createPopularityGenerator(str, records);
+    popularityGenerator = _createPopularityGenerator(str, records, permutation_seed);
   }
   return popularityGenerator;
 }

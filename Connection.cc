@@ -28,7 +28,7 @@ Connection::Connection(struct event_base* _base, struct evdns_base* _evdns,
   valuesize = createGenerator(options.valuesize);
   keysize = createGenerator(options.keysize);
   keygen = new KeyGenerator(keysize, options.records);
-  popularity = createPopularityGenerator(options.popularity, options.records);
+  popularity = createPopularityGenerator(options.popularity, options.records, options.permutation_seed);
 
   if (options.lambda <= 0) {
     iagen = createGenerator("0");

@@ -21,6 +21,7 @@ typedef struct {
   //  int valuesize;
   char ia[32];
   char popularity[32];
+  long permutation_seed;
 
   // qps_per_connection
   // iadist

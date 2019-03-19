@@ -66,6 +66,7 @@ option "popularity" - "Key popularity distribution." string default="uniform"
 text "
 The following popularity distributions are supported:
    uniform                      Uniform distribution.
+   zipf:<theta>                 Zipf distribution.
 "
 
 text "\nAgent-mode options:"
