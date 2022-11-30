@@ -111,6 +111,12 @@ static Generator *_createPopularityGenerator(std::string str, long records, long
 
   if      (strcasestr(str.c_str(), "uniform")) ret = new Uniform(records);
   else if (strcasestr(str.c_str(), "zipf")) ret = new Zipf(records, a1, permutation_seed);
+  else if (strcasestr(str.c_str(), "hotspot")) {
+	  if (s1 && s2 && s3)
+		  ret = new Hotspot(records, a1, a2, (long) a3);
+	  else
+		  ret = new Hotspot(records);
+  }
   else DIE("Unable to create Request Generator '%s'", str.c_str());
 
   delete[] s_copy;

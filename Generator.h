@@ -137,6 +137,51 @@ private:
   }
 };
 
+/* Referred YCSB HotspotIntegerGenerator.java */
+class Hotspot : public Generator {
+public:
+  Hotspot(long _scale, double _hot_key_ratio = 0.1,
+		  double _hot_access_ratio = 0.9, long _nset = 10) :
+	  scale(_scale), hot_key_ratio(_hot_key_ratio),
+	  hot_access_ratio(_hot_access_ratio), nset(_nset) {
+
+    V("Hotspot(scale=%d, hotset=%f, hotopn=%f, nset=%d)", scale,
+		    hot_key_ratio, hot_access_ratio, nset);
+
+    if (nset == 0) scale_chunk = 0;
+    else scale_chunk = scale / nset;
+  }
+
+  virtual double generate(double U = -1.0) {
+    long hotchunk;
+    long hotstart;
+    long V;
+    if (U < 0.0) U = drand48();
+
+    if (U < hot_access_ratio) {
+      V = lrand48();
+      hotchunk = V % nset;
+      hotstart = scale * hotchunk / nset;
+      return hotstart + (lrand48() % (int)(scale_chunk * hot_key_ratio));
+    } else {
+      return scale * drand48();
+    }
+  }
+
+  virtual void set_lambda(double lambda) {
+    if (lambda > 0.0) scale = 2.0 / lambda;
+    else scale = 0.0;
+  }
+
+private:
+  long scale;
+  long scale_chunk;
+  double hot_key_ratio;
+  double hot_access_ratio;
+  long nset;
+};
+
+
 class Normal : public Generator {
 public:
   Normal(double _mean = 1.0, double _sd = 1.0) : mean(_mean), sd(_sd) {
