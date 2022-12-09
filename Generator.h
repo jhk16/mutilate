@@ -26,6 +26,10 @@
 #include "log.h"
 #include "util.h"
 
+#ifdef TRACE
+#include <bits/stdc++.h>
+#endif
+
 // Generator syntax:
 //
 // \d+ == fixed
@@ -87,6 +91,10 @@ public:
     this->eta = (1.0 - pow(2.0 / n, 1.0 - theta)) / (1.0 - this->zeta(2.0, this->theta) / this->zetan);
     this->permutation = new int[this->n];
     D("Zipf(n=%d, theta=%lf, seed=%ld)", n, theta, permutation_seed);
+#ifdef TRACE
+    this->popular = new int[this->n]{};
+    this->seed = permutation_seed;
+#endif
     for (int i=0; i<n; i++)
       this->permutation[i] = i;
     if (permutation_seed) {
@@ -104,6 +112,34 @@ public:
   }
 
   ~Zipf() {
+#ifdef TRACE
+    FILE *log;
+    char log_name[256];
+    snprintf(log_name, 256, "zipf%.2lf-%d-%ld.log", this->theta, this->n, this->seed);
+    FILE *zlog;
+    char zlog_name[256];
+    snprintf(zlog_name, 256, "zipf%.2lf-%d-%ld.zipf.log", this->theta, this->n, this->seed);
+    FILE *slog;
+    char slog_name[256];
+    snprintf(slog_name, 256, "zipf%.2lf-%d-%ld.sort.log", this->theta, this->n, this->seed);
+
+    zlog = fopen(zlog_name, "w+");
+    log = fopen(log_name, "w+");
+    for (int i=0; i<this->n;i++) {
+      fprintf(zlog, "%d,%d\n", permutation[i], this->popular[permutation[i]]);
+      fprintf(log, "%d,%d\n", i, this->popular[i]);
+    }
+    fclose(log);
+    fclose(zlog);
+
+    slog = fopen(slog_name, "w+");
+    std::sort(this->popular, this->popular + this->n);
+    for (int i=0; i < this->n; i++)
+      fprintf(slog, "%d,%d\n", i, this->popular[i]);
+    fclose(slog);
+
+    delete[] this->popular;
+#endif
     delete[] this->permutation;
   }
 
@@ -114,6 +150,10 @@ public:
     idx = (int)(1.0 * this->n * pow(this->eta*U - this->eta + 1.0, this->alpha));
 
     assert(idx >= 0 && idx < this->n);
+#ifdef TRACE
+    this->popular[permutation[idx]]++;
+#endif
+    // printf("%d\n", permutation[idx]);
     return permutation[idx];
   }
 
@@ -124,6 +164,10 @@ private:
   double zetan;
   double eta;
   int *permutation;
+#ifdef TRACE
+  int *popular;
+  long seed;
+#endif
 
   double zeta(int n, double theta) {
     double ret = 0;
