@@ -110,6 +110,10 @@ static Generator *_createPopularityGenerator(std::string str, long records, long
   double a3 = s3 ? atof(s3) : 0.0;
 
   if      (strcasestr(str.c_str(), "uniform")) ret = new Uniform(records);
+  else if (strcasestr(str.c_str(), "zipf-fix")) {
+	  D("ret = new Zipf(%ld, %lf, (long) %ld)", records, a1, (long) a2);
+	  ret = new Zipf(records, a1, (long) a2);
+  }
   else if (strcasestr(str.c_str(), "zipf")) ret = new Zipf(records, a1, permutation_seed);
   else if (strcasestr(str.c_str(), "hotspot")) {
 	  if (s1 && s2 && s3)

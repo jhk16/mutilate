@@ -86,6 +86,7 @@ public:
     this->zetan = this->zeta(this->n, this->theta);
     this->eta = (1.0 - pow(2.0 / n, 1.0 - theta)) / (1.0 - this->zeta(2.0, this->theta) / this->zetan);
     this->permutation = new int[this->n];
+    D("Zipf(n=%d, theta=%lf, seed=%ld)", n, theta, permutation_seed);
     for (int i=0; i<n; i++)
       this->permutation[i] = i;
     if (permutation_seed) {
@@ -110,11 +111,6 @@ public:
     int idx;
 
     if (U < 0.0) U = drand48();
-    double uz = U * this->zetan;
-    if (uz < 1)
-      idx = 0;
-    if (uz < 1.0 + pow(0.5, this->theta))
-      idx = 1;
     idx = (int)(1.0 * this->n * pow(this->eta*U - this->eta + 1.0, this->alpha));
 
     assert(idx >= 0 && idx < this->n);
