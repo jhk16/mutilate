@@ -189,6 +189,8 @@ private:
   std::vector< std::pair<double,double> > pv;
 };
 
+#define KEY_MAX_LENGTH 250
+
 class KeyGenerator {
 public:
   KeyGenerator(Generator* _g, double _max = 10000) : g(_g), max(_max) {}
@@ -197,8 +199,8 @@ public:
     double U = (double) h / ULLONG_MAX;
     double G = g->generate(U);
     int keylen = MAX(round(G), floor(log10(max)) + 1);
-    char key[256];
-    snprintf(key, 256, "%0*" PRIu64, keylen, ind);
+    char key[KEY_MAX_LENGTH];
+    snprintf(key, KEY_MAX_LENGTH, "%0*" PRIu64, keylen, ind);
 
     //    D("%d = %s", ind, key);
     return std::string(key);

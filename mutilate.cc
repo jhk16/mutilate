@@ -43,7 +43,7 @@
 using namespace std;
 
 gengetopt_args_info args;
-char random_char[2 * 1024 * 1024];  // Buffer used to generate random values.
+char random_char[10 * 1024 * 1024];  // Buffer used to generate random values.
 
 #ifdef HAVE_LIBZMQ
 vector<zmq::socket_t*> agent_sockets;
