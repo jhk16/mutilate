@@ -33,20 +33,10 @@ Generator* createFacebookValue() {
 
 Generator* createFacebookIA() { return new GPareto(0, 16.0292, 0.154971); }
 
-Generator* createGenerator(std::string str) {
-  if (!strcmp(str.c_str(), "fb_key")) return createFacebookKey();
-  else if (!strcmp(str.c_str(), "fb_value")) return createFacebookValue();
-  else if (!strcmp(str.c_str(), "fb_ia")) return createFacebookIA();
-
+char *parse_generator_string(std::string str, char **r1, char **r2, char **r3) {
   char *s_copy = new char[str.length() + 1];
   strcpy(s_copy, str.c_str());
   char *saveptr = NULL;
-
-  if (atoi(s_copy) != 0 || !strcmp(s_copy, "0")) {
-    double v = atof(s_copy);
-    delete[] s_copy;
-    return new Fixed(v);
-  }
 
   char *t_ptr = strtok_r(s_copy, ":", &saveptr);
   char *a_ptr = strtok_r(NULL, ":", &saveptr);
@@ -54,18 +44,40 @@ Generator* createGenerator(std::string str) {
   if (t_ptr == NULL) // || a_ptr == NULL)
     DIE("strtok(.., \":\") failed to parse %s", str.c_str());
 
-  char t = t_ptr[0];
-
   saveptr = NULL;
-  char *s1 = strtok_r(a_ptr, ",", &saveptr);
-  char *s2 = strtok_r(NULL, ",", &saveptr);
-  char *s3 = strtok_r(NULL, ",", &saveptr);
+  char *s1 = NULL;
+  char *s2 = NULL;
+  char *s3 = NULL;
 
+  if (a_ptr) {
+    s1 = strtok_r(a_ptr, ",", &saveptr);
+    s2 = strtok_r(NULL, ",", &saveptr);
+    s3 = strtok_r(NULL, ",", &saveptr);
+  }
+
+  *r1 = s1;
+  *r2 = s2;
+  *r3 = s3;
+
+  return s_copy;
+}
+
+Generator* createGenerator(std::string str) {
+  if (!strcmp(str.c_str(), "fb_key")) return createFacebookKey();
+  else if (!strcmp(str.c_str(), "fb_value")) return createFacebookValue();
+  else if (!strcmp(str.c_str(), "fb_ia")) return createFacebookIA();
+
+  char *s1, *s2, *s3;
+  char *s_copy = parse_generator_string(str, &s1, &s2, &s3);
   double a1 = s1 ? atof(s1) : 0.0;
   double a2 = s2 ? atof(s2) : 0.0;
   double a3 = s3 ? atof(s3) : 0.0;
 
-  delete[] s_copy;
+  if (atoi(s_copy) != 0 || !strcmp(s_copy, "0")) {
+    double v = atof(s_copy);
+    delete[] s_copy;
+    return new Fixed(v);
+  }
 
   if      (strcasestr(str.c_str(), "fixed")) return new Fixed(a1);
   else if (strcasestr(str.c_str(), "normal")) return new Normal(a1, a2);
@@ -76,35 +88,16 @@ Generator* createGenerator(std::string str) {
 
   DIE("Unable to create Generator '%s'", str.c_str());
 
+  delete[] s_copy;
+
   return NULL;
 }
 
 static Generator *_createPopularityGenerator(std::string str, long records, long permutation_seed) {
   Generator *ret = NULL;
 
-  char *s_copy = new char[str.length() + 1];
-  strcpy(s_copy, str.c_str());
-  char *saveptr = NULL;
-
-  if (atoi(s_copy) != 0 || !strcmp(s_copy, "0")) {
-    double v = atof(s_copy);
-    delete[] s_copy;
-    return new Fixed(v);
-  }
-
-  char *t_ptr = strtok_r(s_copy, ":", &saveptr);
-  char *a_ptr = strtok_r(NULL, ":", &saveptr);
-
-  if (t_ptr == NULL) // || a_ptr == NULL)
-    DIE("strtok(.., \":\") failed to parse %s", str.c_str());
-
-  char t = t_ptr[0];
-
-  saveptr = NULL;
-  char *s1 = strtok_r(a_ptr, ",", &saveptr);
-  char *s2 = strtok_r(NULL, ",", &saveptr);
-  char *s3 = strtok_r(NULL, ",", &saveptr);
-
+  char *s1, *s2, *s3;
+  char *s_copy = parse_generator_string(str, &s1, &s2, &s3);
   double a1 = s1 ? atof(s1) : 0.0;
   double a2 = s2 ? atof(s2) : 0.0;
   double a3 = s3 ? atof(s3) : 0.0;
